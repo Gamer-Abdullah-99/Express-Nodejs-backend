@@ -1,0 +1,17 @@
+{
+  "name": "backend-nodejs-express",
+  "version": "1.0.0",
+  "description": "This is a practise backend project using nodejs and express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "SABN",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}
