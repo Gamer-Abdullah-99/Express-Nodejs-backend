@@ -22,7 +22,7 @@ router.route("/").get(getCustomers).post(addCustomer);
 
 router
   .route("/:id")
-  .get(getCustomers)
+  .get(getCustomerById)
   .put(updateCustomer)
   .delete(deleteCustomer);
 

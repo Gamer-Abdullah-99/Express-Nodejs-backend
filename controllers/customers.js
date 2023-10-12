@@ -1,19 +1,25 @@
 const asyncHandler = require("express-async-handler");
+const Customer = require("../models/customer");
 
 //@desc Get All Customers
 //@route GET /customers
 //@access public
 const getCustomers = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Get Customers Successfully" });
+  const customers = await Customer.find();
+  res.status(200).json(customers);
 });
 
 //@desc Get Customer By Id
 //@route GET /customers/:id
 //@access public
 const getCustomerById = asyncHandler(async (req, res) => {
-  res
-    .status(200)
-    .json({ message: `Get Customer By Id Successfully ${req.params.id}` });
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+
+  res.status(200).json(customer);
 });
 
 //@desc Add Customer
@@ -21,30 +27,38 @@ const getCustomerById = asyncHandler(async (req, res) => {
 //@access public
 const addCustomer = asyncHandler(async (req, res) => {
   console.log("New Customer data :", req.body);
-  const { name, contact, address } = req.body;
-  if (!name || !contact || !address) {
+  const { name, email, phone } = req.body;
+  if (!name || !email || !phone) {
     res.status(400);
     throw new Error("All Fields must be filled");
   }
-  res.status(201).json({ message: "Add Customer Successfully" });
+  const customer = await Customer.create({ name, email, phone });
+  res.status(201).json(customer);
 });
 
 //@desc Update Customer
 //@route PUT /customers
 //@access public
 const updateCustomer = asyncHandler(async (req, res) => {
-  res
-    .status(200)
-    .json({ message: `Update Customer Successfully ${req.params.id}` });
+  const updatedCustomer = await Customer.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  res.status(200).json(updatedCustomer);
 });
 
 //@desc Delete Customer
 //@route DELETE /customers
 //@access public
 const deleteCustomer = asyncHandler(async (req, res) => {
-  res
-    .status(200)
-    .json({ message: `Delete Customer Successfully ${req.params.id}` });
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+  await Customer.deleteOne();
+  res.status(200).json(customer);
 });
 
 module.exports = {
