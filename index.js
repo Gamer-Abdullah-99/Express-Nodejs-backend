@@ -21,4 +21,6 @@ app.use(express.json());
 
 app.use("/customers", require("./routes/customers"));
 
+app.use("/users", require("./routes/user"));
+
 app.use(errorHandler);
