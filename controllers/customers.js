@@ -3,15 +3,15 @@ const Customer = require("../models/customer");
 
 //@desc Get All Customers
 //@route GET /customers
-//@access public
+//@access private
 const getCustomers = asyncHandler(async (req, res) => {
-  const customers = await Customer.find();
+  const customers = await Customer.find({ user_id: req.user.id });
   res.status(200).json(customers);
 });
 
 //@desc Get Customer By Id
 //@route GET /customers/:id
-//@access public
+//@access private
 const getCustomerById = asyncHandler(async (req, res) => {
   const customer = await Customer.findById(req.params.id);
   if (!customer) {
@@ -24,7 +24,7 @@ const getCustomerById = asyncHandler(async (req, res) => {
 
 //@desc Add Customer
 //@route POST /customers
-//@access public
+//@access private
 const addCustomer = asyncHandler(async (req, res) => {
   console.log("New Customer data :", req.body);
   const { name, email, phone } = req.body;
@@ -32,14 +32,28 @@ const addCustomer = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("All Fields must be filled");
   }
-  const customer = await Customer.create({ name, email, phone });
+  const customer = await Customer.create({
+    name,
+    email,
+    phone,
+    user_id: req.user.id,
+  });
   res.status(201).json(customer);
 });
 
 //@desc Update Customer
 //@route PUT /customers
-//@access public
+//@access private
 const updateCustomer = asyncHandler(async (req, res) => {
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+  if (customer.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission to update other users data");
+  }
   const updatedCustomer = await Customer.findByIdAndUpdate(
     req.params.id,
     req.body,
@@ -50,14 +64,18 @@ const updateCustomer = asyncHandler(async (req, res) => {
 
 //@desc Delete Customer
 //@route DELETE /customers
-//@access public
+//@access private
 const deleteCustomer = asyncHandler(async (req, res) => {
   const customer = await Customer.findById(req.params.id);
   if (!customer) {
     res.status(404);
     throw new Error("Contact not found");
   }
-  await Customer.deleteOne();
+  if (customer.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission to update other users data");
+  }
+  await Customer.deleteOne({ _id: req.params.id });
   res.status(200).json(customer);
 });
 

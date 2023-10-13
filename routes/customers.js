@@ -6,6 +6,7 @@ const {
   deleteCustomer,
   addCustomer,
 } = require("../controllers/customers");
+const validateToken = require("../middleware/validateTokenHandler");
 const router = express.Router();
 
 // router.get("/", getCustomers);
@@ -17,6 +18,8 @@ const router = express.Router();
 // router.put("/:id", updateCustomer);
 
 // router.delete("/:id", deleteCustomer);
+
+router.use(validateToken);
 
 router.route("/").get(getCustomers).post(addCustomer);
 
