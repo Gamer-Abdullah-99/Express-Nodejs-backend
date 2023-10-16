@@ -2,6 +2,7 @@ const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
 const connectDB = require("./config/dbConnection");
 const dotenv = require("dotenv").config();
+const cors = require("cors");
 
 connectDB();
 const app = express();
@@ -18,6 +19,16 @@ app.listen(port, () => {
 
 //Middleware
 app.use(express.json());
+
+app.use(cors());
+
+// app.use(
+//   cors({
+//     origin: "",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type"],
+//   })
+// );
 
 app.use("/customers", require("./routes/customers"));
 
